@@ -1,0 +1,10 @@
+# OS X Finder metadata
+.DS_Store
+
+# Build files
+*.tar.bz2
+*.pkg
+*.dmg
+
+# Application bundles
+*.app

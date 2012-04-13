@@ -1,0 +1,49 @@
+#!/bin/bash
+
+source "$1/Contents/Resources/common.sh"
+
+# ----------------------------------------------------------------------------
+
+# Delete files from the old installer package that aren't being overwritten by this new one.
+
+LAUNCH_MANIFEST=(
+	"/Library/LaunchAgents/edu.utexas.ClamXav.ScanLauncher.plist"
+	"/Library/LaunchAgents/edu.utexas.ClamXav.SentryLauncher.plist"
+	"/Library/LaunchAgents/edu.utexas.ClamXav.UpdateLauncher.plist"
+	"/Library/LaunchDaemons/edu.utexas.ClamXav.clamdLauncher.plist"
+)
+
+FILE_MANIFEST=(
+	"/Library/Preferences/uk.co.markallan.clamxav.plist"
+	"/usr/local/bin/edu.utexas.ClamXav.ScanLauncher.sh"
+	"/usr/local/bin/edu.utexas.ClamXav.UpdateLauncher.sh"
+)
+
+# ----------------------------------------------------------------------------
+
+for file in "${LAUNCH_MANIFEST[@]}"; do
+	file="$VOLUME$file"
+	
+	if [[ -e "$file" ]]; then
+		/bin/launchctl unload "$file"
+		/bin/rm -f "$file"
+	fi
+done
+
+for file in "${FILE_MANIFEST[@]}"; do
+	file="$VOLUME$file"
+	
+	if [[ -e "$file" ]]; then
+		/bin/rm -f "$file"
+	fi
+done
+
+# Forget the old installer ever existed.
+
+PKG_ID="edu.utexas.UTClamXavInstaller"
+
+/usr/sbin/pkgutil --volume "$VOLUME" --forget "$PKG_ID"
+/bin/rm -f "$VOLUME/var/db/receipts/$PKG_ID.*"
+/bin/rm -f "$VOLUME/Library/Receipts/db/$PKG_ID.*"
+
+exit 0

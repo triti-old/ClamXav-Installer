@@ -1,0 +1,49 @@
+#!/bin/bash
+
+source "$1/Contents/Resources/common.sh"
+
+# ----------------------------------------------------------------------------
+
+APP_NAME="ClamXav.app"
+APP_DOMAIN="uk.co.markallan.clamxav"
+
+PKG_NAME="clamavEngineInstaller104.pkg"
+
+CLAMD_PLIST="/Library/LaunchDaemons/uk.co.markallan.clamxav.clamd.plist"
+
+CLAMAV_PREFIX="/usr/local/clamXav"
+UPDATE_LOG="$CLAMAV_PREFIX/share/clamav/freshclam.log"
+
+# ----------------------------------------------------------------------------
+
+PACKAGE="$VOLUME/Applications/$APP_NAME/Contents/Resources/$PKG_NAME"
+
+if [[ -e "$PACKAGE" ]]; then
+	install_pkg_to_volume "$PACKAGE" "$VOLUME"
+	
+	if [[ "$VOLUME" == "/" ]]; then
+		if [[ -e "$CLAMD_PLIST" ]]; then
+			/bin/launchctl load -w "$CLAMD_PLIST"
+		fi
+		
+		if [[ -e "/tmp/freshclam_ClamXav-Installer.conf" ]]; then
+			print "Existing freshclam config file found -- moving it back."
+			mv /tmp/freshclam-ClamXav-Installer.conf "$CLAMAV_PREFIX/etc/freshclam.conf"
+		fi
+
+		if [[ -e "/tmp/clamd-ClamXav-Installer.conf" ]]; then
+			print "Existing clamd config file found -- moving it back."
+		    mv /tmp/clamd-ClamXav-Installer.conf "$CLAMAV_PREFIX/etc/clamd.conf"
+		fi
+		
+		FRESHCLAM="$CLAMAV_PREFIX/bin/freshclam"
+		
+		if [[ -x "$FRESHCLAM" ]]; then
+			print "Updating clamav databases..."
+			"$FRESHCLAM" --log="$UPDATE_LOG"
+		fi
+		
+	fi
+fi
+
+exit 0
