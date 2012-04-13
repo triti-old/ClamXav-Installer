@@ -1,7 +1,9 @@
 include /usr/local/share/luggage/luggage.make
 
-TITLE=ClamXav_for_UT_System_Administrators-2.1.1
-REVERSE_DOMAIN=edu.utexas.clamxav.pkg
+TITLE=ClamXav_for_System_Administrators
+REVERSE_DOMAIN=uk.co.markallan.clamxav
+
+PACKAGE_VERSION=2.1.1
 
 PAYLOAD=\
 	unbz2-applications-ClamXav.app\

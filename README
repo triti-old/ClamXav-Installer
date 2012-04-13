@@ -1,1 +1,5 @@
 Makefile plus additional files necessary for building an Apple installer package for mass deployment of the ClamXav application.
+
+Requires you to have The Luggage installed: https://github.com/unixorn/luggage
+
+The preflight script is specific to our site and removes an older version of the customized installer so you should very likely just remove it from the makefile.
